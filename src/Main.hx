@@ -55,7 +55,8 @@ class Main extends Sprite
 	
 	//the ball movement
 	private var ballMovement:Point;
-	private var ballSpeed:Int;
+	private var defaultBallSpeed:Float;
+	private var ballSpeed:Float;
 	
 	function resize(e)
 	{
@@ -119,7 +120,8 @@ class Main extends Sprite
 		platformSpeed = 7;
 		
 		//ball defaults
-		ballSpeed = 7;
+		defaultBallSpeed = 7;
+		ballSpeed = defaultBallSpeed;
 		ballMovement = new Point(0, 0);
 		
 		//add keyboard listeners
@@ -176,6 +178,7 @@ class Main extends Sprite
 	
 	private function resetBall():Void
 	{
+		ballSpeed = defaultBallSpeed; 
 		ball.x = 250;
 		ball.y = 250;
 	}
@@ -288,6 +291,7 @@ class Main extends Sprite
 	{
 		var direction:Int = (ballMovement.x > 0) ? -1 : 1;
 		var randomAngle:Float = (Math.random() * Math.PI / 2) - 45;
+		ballSpeed += 0.1;
 		ballMovement.x = direction * Math.cos(randomAngle) * ballSpeed;
 		ballMovement.y = Math.sin(randomAngle) * ballSpeed; 
 	}

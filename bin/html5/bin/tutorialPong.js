@@ -45,7 +45,7 @@ ApplicationMain.init = function() {
 	if(total == 0) ApplicationMain.start();
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "21", company : "Ebrewe", file : "tutorialPong", fps : 60, name : "tutorial_Pong", orientation : "", packageName : "tutorialPong", version : "1.0.0", windows : [{ antialiasing : 0, background : 3355443, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : false, height : 500, parameters : "{}", resizable : true, stencilBuffer : true, title : "tutorial_Pong", vsync : false, width : 500, x : null, y : null}]};
+	ApplicationMain.config = { build : "22", company : "Ebrewe", file : "tutorialPong", fps : 60, name : "tutorial_Pong", orientation : "", packageName : "tutorialPong", version : "1.0.0", windows : [{ antialiasing : 0, background : 3355443, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : false, height : 500, parameters : "{}", resizable : true, stencilBuffer : true, title : "tutorial_Pong", vsync : false, width : 500, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var hasMain = false;
@@ -1408,7 +1408,8 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 		this.arrowKeyDown = false;
 		this.arrowKeyUp = false;
 		this.platformSpeed = 7;
-		this.ballSpeed = 7;
+		this.defaultBallSpeed = 7;
+		this.ballSpeed = this.defaultBallSpeed;
 		this.ballMovement = new openfl_geom_Point(0,0);
 		this.stage.addEventListener("keyDown",$bind(this,this.keyDown));
 		this.stage.addEventListener("keyUp",$bind(this,this.keyUp));
@@ -1431,6 +1432,7 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 		}
 	}
 	,resetBall: function() {
+		this.ballSpeed = this.defaultBallSpeed;
 		this.ball.set_x(250);
 		this.ball.set_y(250);
 	}
@@ -1477,7 +1479,7 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 			_g3.set_y(_g3.get_y() + this.ballMovement.y);
 			if(this.ball.get_y() < 5 || this.ball.get_y() > 495) {
 				this.ballMovement.y *= -1;
-				haxe_Log.trace(this.ballMovement.y,{ fileName : "Main.hx", lineNumber : 245, className : "Main", methodName : "update"});
+				haxe_Log.trace(this.ballMovement.y,{ fileName : "Main.hx", lineNumber : 248, className : "Main", methodName : "update"});
 			}
 			if(this.ball.get_x() < 5) this.winGame(Player.AI);
 			if(this.ball.get_x() > 495) this.winGame(Player.Human);
@@ -1511,6 +1513,7 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 		var direction;
 		if(this.ballMovement.x > 0) direction = -1; else direction = 1;
 		var randomAngle = Math.random() * Math.PI / 2 - 45;
+		this.ballSpeed += 0.1;
 		this.ballMovement.x = direction * Math.cos(randomAngle) * this.ballSpeed;
 		this.ballMovement.y = Math.sin(randomAngle) * this.ballSpeed;
 	}
