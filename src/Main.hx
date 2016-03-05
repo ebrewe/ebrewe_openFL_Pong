@@ -3,14 +3,16 @@ package;
 import flash.geom.Point;
 import flash.text.TextField;
 import flash.text.TextFormat;
+import flash.Lib;
+
 import haxe.Timer;
+import openfl.Lib;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
+import openfl.geom.Point;
 import openfl.text.TextField;
 import openfl.text.TextFormatAlign;
-import openfl.geom.Point;
-import openfl.Lib;
 
 /**
  * ...
@@ -180,8 +182,9 @@ class Main extends Sprite
 	
 	private function startBall():Void
 	{
-		var randomAngle:Float = Math.random() * 2 * Math.PI;
-		ballMovement.x = Math.cos(randomAngle) * ballSpeed; //cos of a horizontal angle is 1, sin 0 : adj/hyp
+		var direction:Int = (Math.random() > 0.5) ? 1 : -1;  
+		var randomAngle:Float = Math.random() * 2 * Math.PI - 45;
+		ballMovement.x = Math.cos(randomAngle) * ballSpeed * direction; //cos of a horizontal angle is 1, sin 0 : adj/hyp
 		ballMovement.y = Math.sin(randomAngle) * ballSpeed; //sin of a vertical angle is 1, cos 0 : opp/hyp ... you knew that
 		
 		
@@ -243,6 +246,27 @@ class Main extends Sprite
 			}
 			if (ball.x < 5) winGame(Player.AI);
 			if (ball.x > 495) winGame(Player.Human);
+			
+			//paddle hit player
+			if (ballMovement.x < 0 && ball.x < 30 && ball.y >= platform1.y && ball.y <= platform1.y + 100) {
+				bounceBall();
+				ball.x = 30;
+			}
+			//AI
+			if (ballMovement.x > 0 && ball.x > 470 && ball.y >= platform2.y && ball.y <= platform2.y + 100) {
+				bounceBall();
+				ball.x = 470;
+			}
+			// AI platform movement
+			if (ball.x > 300 && ball.y > platform2.y + 70) {
+				platform2.y += platformSpeed;
+			}
+			if (ball.x > 300 && ball.y < platform2.y + 30) {
+				platform2.y -= platformSpeed;
+			}
+			// AI platform constraints
+			if (platform2.y < 5) platform2.y = 5;
+			if (platform2.y > 395) platform2.y = 395;
 		}
 	}
 	
@@ -258,5 +282,13 @@ class Main extends Sprite
 		}
 		resetBall();
 		setGameState(GameState.Paused); 
+	}
+	
+	private function bounceBall():Void
+	{
+		var direction:Int = (ballMovement.x > 0) ? -1 : 1;
+		var randomAngle:Float = (Math.random() * Math.PI / 2) - 45;
+		ballMovement.x = direction * Math.cos(randomAngle) * ballSpeed;
+		ballMovement.y = Math.sin(randomAngle) * ballSpeed; 
 	}
 }

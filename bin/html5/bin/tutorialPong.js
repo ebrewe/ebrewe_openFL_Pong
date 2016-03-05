@@ -45,7 +45,7 @@ ApplicationMain.init = function() {
 	if(total == 0) ApplicationMain.start();
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "19", company : "Ebrewe", file : "tutorialPong", fps : 60, name : "tutorial_Pong", orientation : "", packageName : "tutorialPong", version : "1.0.0", windows : [{ antialiasing : 0, background : 3355443, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : false, height : 500, parameters : "{}", resizable : true, stencilBuffer : true, title : "tutorial_Pong", vsync : false, width : 500, x : null, y : null}]};
+	ApplicationMain.config = { build : "21", company : "Ebrewe", file : "tutorialPong", fps : 60, name : "tutorial_Pong", orientation : "", packageName : "tutorialPong", version : "1.0.0", windows : [{ antialiasing : 0, background : 3355443, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : false, height : 500, parameters : "{}", resizable : true, stencilBuffer : true, title : "tutorial_Pong", vsync : false, width : 500, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var hasMain = false;
@@ -1435,8 +1435,10 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 		this.ball.set_y(250);
 	}
 	,startBall: function() {
-		var randomAngle = Math.random() * 2 * Math.PI;
-		this.ballMovement.x = Math.cos(randomAngle) * this.ballSpeed;
+		var direction;
+		if(Math.random() > 0.5) direction = 1; else direction = -1;
+		var randomAngle = Math.random() * 2 * Math.PI - 45;
+		this.ballMovement.x = Math.cos(randomAngle) * this.ballSpeed * direction;
 		this.ballMovement.y = Math.sin(randomAngle) * this.ballSpeed;
 	}
 	,keyDown: function(e) {
@@ -1475,10 +1477,28 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 			_g3.set_y(_g3.get_y() + this.ballMovement.y);
 			if(this.ball.get_y() < 5 || this.ball.get_y() > 495) {
 				this.ballMovement.y *= -1;
-				haxe_Log.trace(this.ballMovement.y,{ fileName : "Main.hx", lineNumber : 242, className : "Main", methodName : "update"});
+				haxe_Log.trace(this.ballMovement.y,{ fileName : "Main.hx", lineNumber : 245, className : "Main", methodName : "update"});
 			}
 			if(this.ball.get_x() < 5) this.winGame(Player.AI);
 			if(this.ball.get_x() > 495) this.winGame(Player.Human);
+			if(this.ballMovement.x < 0 && this.ball.get_x() < 30 && this.ball.get_y() >= this.platform1.get_y() && this.ball.get_y() <= this.platform1.get_y() + 100) {
+				this.bounceBall();
+				this.ball.set_x(30);
+			}
+			if(this.ballMovement.x > 0 && this.ball.get_x() > 470 && this.ball.get_y() >= this.platform2.get_y() && this.ball.get_y() <= this.platform2.get_y() + 100) {
+				this.bounceBall();
+				this.ball.set_x(470);
+			}
+			if(this.ball.get_x() > 300 && this.ball.get_y() > this.platform2.get_y() + 70) {
+				var _g4 = this.platform2;
+				_g4.set_y(_g4.get_y() + this.platformSpeed);
+			}
+			if(this.ball.get_x() > 300 && this.ball.get_y() < this.platform2.get_y() + 30) {
+				var _g5 = this.platform2;
+				_g5.set_y(_g5.get_y() - this.platformSpeed);
+			}
+			if(this.platform2.get_y() < 5) this.platform2.set_y(5);
+			if(this.platform2.get_y() > 395) this.platform2.set_y(395);
 		}
 	}
 	,winGame: function(player) {
@@ -1486,6 +1506,13 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 		if(player == Player.AI) this.scoreAI++;
 		this.resetBall();
 		this.setGameState(GameState.Paused);
+	}
+	,bounceBall: function() {
+		var direction;
+		if(this.ballMovement.x > 0) direction = -1; else direction = 1;
+		var randomAngle = Math.random() * Math.PI / 2 - 45;
+		this.ballMovement.x = direction * Math.cos(randomAngle) * this.ballSpeed;
+		this.ballMovement.y = Math.sin(randomAngle) * this.ballSpeed;
 	}
 	,__class__: Main
 });
