@@ -45,7 +45,7 @@ ApplicationMain.init = function() {
 	if(total == 0) ApplicationMain.start();
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "11", company : "Ebrewe", file : "tutorialPong", fps : 60, name : "tutorial_Pong", orientation : "", packageName : "tutorialPong", version : "1.0.0", windows : [{ antialiasing : 0, background : 3355443, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : false, height : 500, parameters : "{}", resizable : true, stencilBuffer : true, title : "tutorial_Pong", vsync : false, width : 500, x : null, y : null}]};
+	ApplicationMain.config = { build : "19", company : "Ebrewe", file : "tutorialPong", fps : 60, name : "tutorial_Pong", orientation : "", packageName : "tutorialPong", version : "1.0.0", windows : [{ antialiasing : 0, background : 3355443, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : false, height : 500, parameters : "{}", resizable : true, stencilBuffer : true, title : "tutorial_Pong", vsync : false, width : 500, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var hasMain = false;
@@ -1405,7 +1405,14 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 		this.scorePlayer = 0;
 		this.scoreAI = 0;
 		this.setGameState(GameState.Paused);
+		this.arrowKeyDown = false;
+		this.arrowKeyUp = false;
+		this.platformSpeed = 7;
+		this.ballSpeed = 7;
+		this.ballMovement = new openfl_geom_Point(0,0);
 		this.stage.addEventListener("keyDown",$bind(this,this.keyDown));
+		this.stage.addEventListener("keyUp",$bind(this,this.keyUp));
+		this.addEventListener("enterFrame",$bind(this,this.update));
 	}
 	,added: function(e) {
 		this.removeEventListener("addedToStage",$bind(this,this.added));
@@ -1418,7 +1425,19 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 	,setGameState: function(state) {
 		this.currentGameState = state;
 		this.updateScore();
-		if(state == GameState.Paused) this.messageField.set_alpha(1); else this.messageField.set_alpha(0);
+		if(state == GameState.Paused) this.messageField.set_alpha(1); else {
+			this.messageField.set_alpha(0);
+			this.startBall();
+		}
+	}
+	,resetBall: function() {
+		this.ball.set_x(250);
+		this.ball.set_y(250);
+	}
+	,startBall: function() {
+		var randomAngle = Math.random() * 2 * Math.PI;
+		this.ballMovement.x = Math.cos(randomAngle) * this.ballSpeed;
+		this.ballMovement.y = Math.sin(randomAngle) * this.ballSpeed;
 	}
 	,keyDown: function(e) {
 		if(e.keyCode == 32) {
@@ -1426,6 +1445,47 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 			if(this.currentGameState == GameState.Paused) newState = GameState.Playing; else newState = GameState.Paused;
 			this.setGameState(newState);
 		}
+		if(e.keyCode == 38) {
+			this.arrowKeyDown = false;
+			this.arrowKeyUp = true;
+		}
+		if(e.keyCode == 40) {
+			this.arrowKeyUp = false;
+			this.arrowKeyDown = true;
+		}
+	}
+	,keyUp: function(event) {
+		if(event.keyCode == 38) this.arrowKeyUp = false; else if(event.keyCode == 40) this.arrowKeyDown = false;
+	}
+	,update: function(event) {
+		if(this.currentGameState == GameState.Playing) {
+			if(this.arrowKeyUp) {
+				var _g = this.platform1;
+				_g.set_y(_g.get_y() - this.platformSpeed);
+			}
+			if(this.arrowKeyDown) {
+				var _g1 = this.platform1;
+				_g1.set_y(_g1.get_y() + this.platformSpeed);
+			}
+			if(this.platform1.get_y() < 5) this.platform1.set_y(5);
+			if(this.platform1.get_y() > 395) this.platform1.set_y(395);
+			var _g2 = this.ball;
+			_g2.set_x(_g2.get_x() + this.ballMovement.x);
+			var _g3 = this.ball;
+			_g3.set_y(_g3.get_y() + this.ballMovement.y);
+			if(this.ball.get_y() < 5 || this.ball.get_y() > 495) {
+				this.ballMovement.y *= -1;
+				haxe_Log.trace(this.ballMovement.y,{ fileName : "Main.hx", lineNumber : 242, className : "Main", methodName : "update"});
+			}
+			if(this.ball.get_x() < 5) this.winGame(Player.AI);
+			if(this.ball.get_x() > 495) this.winGame(Player.Human);
+		}
+	}
+	,winGame: function(player) {
+		if(player == Player.Human) this.scorePlayer++;
+		if(player == Player.AI) this.scoreAI++;
+		this.resetBall();
+		this.setGameState(GameState.Paused);
 	}
 	,__class__: Main
 });
@@ -1746,6 +1806,13 @@ GameState.Paused.__enum__ = GameState;
 GameState.Playing = ["Playing",1];
 GameState.Playing.toString = $estr;
 GameState.Playing.__enum__ = GameState;
+var Player = $hxClasses["Player"] = { __ename__ : true, __constructs__ : ["Human","AI"] };
+Player.Human = ["Human",0];
+Player.Human.toString = $estr;
+Player.Human.__enum__ = Player;
+Player.AI = ["AI",1];
+Player.AI.toString = $estr;
+Player.AI.__enum__ = Player;
 Math.__name__ = ["Math"];
 var NMEPreloader = function() {
 	openfl_display_Sprite.call(this);
