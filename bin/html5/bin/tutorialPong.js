@@ -45,7 +45,7 @@ ApplicationMain.init = function() {
 	if(total == 0) ApplicationMain.start();
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "2", company : "Ebrewe", file : "tutorialPong", fps : 60, name : "tutorial_Pong", orientation : "", packageName : "tutorialPong", version : "1.0.0", windows : [{ antialiasing : 0, background : 3355443, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : false, height : 500, parameters : "{}", resizable : true, stencilBuffer : true, title : "tutorial_Pong", vsync : false, width : 500, x : null, y : null}]};
+	ApplicationMain.config = { build : "5", company : "Ebrewe", file : "tutorialPong", fps : 60, name : "tutorial_Pong", orientation : "", packageName : "tutorialPong", version : "1.0.0", windows : [{ antialiasing : 0, background : 3355443, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : false, height : 500, parameters : "{}", resizable : true, stencilBuffer : true, title : "tutorial_Pong", vsync : false, width : 500, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var hasMain = false;
@@ -1373,6 +1373,18 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 	,init: function() {
 		if(this.inited) return;
 		this.inited = true;
+		this.platform1 = new Platform();
+		this.platform1.set_x(5);
+		this.platform1.set_y(this.stage.stageHeight / 2 - this.platform1.get_height() / 2);
+		this.addChild(this.platform1);
+		this.platform2 = new Platform();
+		this.platform2.set_x(480);
+		this.platform2.set_y(this.stage.stageHeight / 2 - this.platform2.get_height() / 2);
+		this.addChild(this.platform2);
+		this.ball = new Ball();
+		this.ball.set_x(250);
+		this.ball.set_y(250);
+		this.addChild(this.ball);
 	}
 	,added: function(e) {
 		this.removeEventListener("addedToStage",$bind(this,this.added));
@@ -1391,6 +1403,18 @@ DocumentClass.__name__ = ["DocumentClass"];
 DocumentClass.__super__ = Main;
 DocumentClass.prototype = $extend(Main.prototype,{
 	__class__: DocumentClass
+});
+var Ball = function() {
+	openfl_display_Sprite.call(this);
+	this.get_graphics().beginFill(16777215);
+	this.get_graphics().drawCircle(0,0,10);
+	this.get_graphics().endFill();
+};
+$hxClasses["Ball"] = Ball;
+Ball.__name__ = ["Ball"];
+Ball.__super__ = openfl_display_Sprite;
+Ball.prototype = $extend(openfl_display_Sprite.prototype,{
+	__class__: Ball
 });
 var lime_AssetLibrary = function() {
 	this.onChange = new lime_app_Event_$Void_$Void();
@@ -1734,6 +1758,18 @@ NMEPreloader.prototype = $extend(openfl_display_Sprite.prototype,{
 		this.progress.set_scaleX(percentLoaded);
 	}
 	,__class__: NMEPreloader
+});
+var Platform = function() {
+	openfl_display_Sprite.call(this);
+	this.get_graphics().beginFill(16777215);
+	this.get_graphics().drawRect(0,0,15,100);
+	this.get_graphics().endFill();
+};
+$hxClasses["Platform"] = Platform;
+Platform.__name__ = ["Platform"];
+Platform.__super__ = openfl_display_Sprite;
+Platform.prototype = $extend(openfl_display_Sprite.prototype,{
+	__class__: Platform
 });
 var Reflect = function() { };
 $hxClasses["Reflect"] = Reflect;

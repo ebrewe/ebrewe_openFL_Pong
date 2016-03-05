@@ -14,6 +14,10 @@ class Main extends Sprite
 
 	var inited: Bool = false; 
 	
+	private var platform1:Platform;
+	private var platform2:Platform;
+	private var ball:Ball;
+	
 	function resize(e)
 	{
 		if (!inited) init();
@@ -24,6 +28,23 @@ class Main extends Sprite
 		if (inited) 
 			return;
 		inited = true; 
+		
+		//Here we go!
+		platform1 = new Platform();
+		platform1.x = 5; 
+		platform1.y = (this.stage.stageHeight / 2) - (platform1.height/2);
+		this.addChild(platform1);
+		
+		platform2 = new Platform();
+		platform2.x = 480; 
+		platform2.y = (this.stage.stageHeight / 2) - (platform2.height / 2);
+		this.addChild(platform2);
+		
+		ball = new Ball();
+		ball.x = 250;
+		ball.y = 250;
+		this.addChild(ball);
+		
 	}
 	
 	public function new() 
