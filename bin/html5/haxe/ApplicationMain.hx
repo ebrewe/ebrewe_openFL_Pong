@@ -91,7 +91,7 @@ class ApplicationMain {
 		
 		config = {
 			
-			build: "5",
+			build: "11",
 			company: "Ebrewe",
 			file: "tutorialPong",
 			fps: 60,

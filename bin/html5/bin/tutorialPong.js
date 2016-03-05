@@ -45,7 +45,7 @@ ApplicationMain.init = function() {
 	if(total == 0) ApplicationMain.start();
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "5", company : "Ebrewe", file : "tutorialPong", fps : 60, name : "tutorial_Pong", orientation : "", packageName : "tutorialPong", version : "1.0.0", windows : [{ antialiasing : 0, background : 3355443, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : false, height : 500, parameters : "{}", resizable : true, stencilBuffer : true, title : "tutorial_Pong", vsync : false, width : 500, x : null, y : null}]};
+	ApplicationMain.config = { build : "11", company : "Ebrewe", file : "tutorialPong", fps : 60, name : "tutorial_Pong", orientation : "", packageName : "tutorialPong", version : "1.0.0", windows : [{ antialiasing : 0, background : 3355443, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : false, height : 500, parameters : "{}", resizable : true, stencilBuffer : true, title : "tutorial_Pong", vsync : false, width : 500, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var hasMain = false;
@@ -1385,11 +1385,47 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 		this.ball.set_x(250);
 		this.ball.set_y(250);
 		this.addChild(this.ball);
+		var scoreFormat = new openfl_text_TextFormat("Verdana",24,14277081,true);
+		scoreFormat.align = 0;
+		this.scoreField = new openfl_text_TextField();
+		this.addChild(this.scoreField);
+		this.scoreField.set_width(500);
+		this.scoreField.set_y(30);
+		this.scoreField.set_defaultTextFormat(scoreFormat);
+		this.scoreField.set_selectable(false);
+		var messageFormat = new openfl_text_TextFormat("Verdana",18,14277081,true);
+		messageFormat.align = 0;
+		this.messageField = new openfl_text_TextField();
+		this.addChild(this.messageField);
+		this.messageField.set_width(500);
+		this.messageField.set_y(450);
+		this.messageField.set_defaultTextFormat(messageFormat);
+		this.messageField.set_selectable(false);
+		this.messageField.set_text("Press Spacebar to begin\nUse Arrow Keys to move your Platform");
+		this.scorePlayer = 0;
+		this.scoreAI = 0;
+		this.setGameState(GameState.Paused);
+		this.stage.addEventListener("keyDown",$bind(this,this.keyDown));
 	}
 	,added: function(e) {
 		this.removeEventListener("addedToStage",$bind(this,this.added));
 		this.stage.addEventListener("resize",$bind(this,this.resize));
 		this.init();
+	}
+	,updateScore: function() {
+		this.scoreField.set_text(this.scorePlayer + ":" + this.scoreAI);
+	}
+	,setGameState: function(state) {
+		this.currentGameState = state;
+		this.updateScore();
+		if(state == GameState.Paused) this.messageField.set_alpha(1); else this.messageField.set_alpha(0);
+	}
+	,keyDown: function(e) {
+		if(e.keyCode == 32) {
+			var newState;
+			if(this.currentGameState == GameState.Paused) newState = GameState.Playing; else newState = GameState.Paused;
+			this.setGameState(newState);
+		}
 	}
 	,__class__: Main
 });
@@ -1703,6 +1739,13 @@ List.prototype = {
 	}
 	,__class__: List
 };
+var GameState = $hxClasses["GameState"] = { __ename__ : true, __constructs__ : ["Paused","Playing"] };
+GameState.Paused = ["Paused",0];
+GameState.Paused.toString = $estr;
+GameState.Paused.__enum__ = GameState;
+GameState.Playing = ["Playing",1];
+GameState.Playing.toString = $estr;
+GameState.Playing.__enum__ = GameState;
 Math.__name__ = ["Math"];
 var NMEPreloader = function() {
 	openfl_display_Sprite.call(this);
